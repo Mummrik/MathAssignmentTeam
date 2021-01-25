@@ -4,37 +4,47 @@ using UnityEngine;
 
 public class IkSolver : MonoBehaviour
 {
-    public float maxLegLength = 2;
+    public float maxReach = 2;
     public Vector3 targetPosition = new Vector3(0, 0, 1);
 
     private void OnDrawGizmos()
     {
         Vector3 origin = transform.position;
-        Vector3 endpoint = origin + GetEndpoint(maxLegLength);
-        Vector3 halfpoint = GetHalfPoint(origin, endpoint);
+        Vector3 endpoint = origin + GetEndpoint(maxReach);
 
-        float c = maxLegLength * 0.5f;
-        float b = Vector3.Distance(origin, halfpoint);
-        float a = Mathf.Sqrt(Mathf.Pow(c, 2) - Mathf.Pow(b, 2));
-        Vector3 halfpointUp = (origin + halfpoint + (Vector3.up * a)).normalized;
-
+        // origin sphere
+        Gizmos.color = Color.green;
         Gizmos.DrawSphere(origin, .1f);
-        Gizmos.DrawSphere(halfpointUp, .1f);
-        Gizmos.DrawSphere(halfpoint, .1f);
+
+        // end sphere
+        Gizmos.color = Color.red;
         Gizmos.DrawSphere(endpoint, .1f);
 
+        // target sphere
         Gizmos.color = Color.magenta;
         Gizmos.DrawSphere(origin + targetPosition, .05f);
 
+        //Line between origin and endpoint
         Gizmos.color = Color.red;
         Gizmos.DrawLine(origin, endpoint);
-        Gizmos.DrawLine(origin + (Vector3.up * a), endpoint + (Vector3.up * a)); // debug
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(halfpoint, halfpointUp);
 
+        float c = maxReach * 0.5f;
+        float b = Vector3.Distance(origin, endpoint * 0.5f);
+        float a = Mathf.Sqrt(Mathf.Pow(c, 2) - Mathf.Pow(b, 2));
+
+        Vector3 halfpoint = GetHalfPoint(origin, endpoint) + transform.up * a;
+
+        // halfpoint sphere
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(halfpoint, .1f);
+        Gizmos.DrawLine(origin + (endpoint * 0.5f), halfpoint);
+
+        //Segment debug
         Gizmos.color = Color.green;
-        Gizmos.DrawLine(origin, halfpointUp);
-        Gizmos.DrawLine(endpoint, halfpointUp);
+        Gizmos.DrawLine(origin, halfpoint);
+        Gizmos.DrawLine(halfpoint, endpoint);
+
+        transform.LookAt(endpoint);
     }
 
     private Vector3 GetHalfPoint(Vector3 a, Vector3 b)
