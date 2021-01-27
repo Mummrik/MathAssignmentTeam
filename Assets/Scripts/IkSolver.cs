@@ -29,7 +29,7 @@ public class IkSolver : MonoBehaviour
         Gizmos.DrawLine(origin, endpoint);
 
         float c = maxReach * 0.5f;
-        float b = Vector3.Distance(origin, endpoint * 0.5f);
+        float b = Vector3.Distance(origin, GetHalfPoint(origin, endpoint));
         float a = Mathf.Sqrt(Mathf.Pow(c, 2) - Mathf.Pow(b, 2));
 
         Vector3 halfpoint = GetHalfPoint(origin, endpoint) + transform.up * a;
@@ -37,12 +37,12 @@ public class IkSolver : MonoBehaviour
         // halfpoint sphere
         Gizmos.color = Color.yellow;
         Gizmos.DrawSphere(halfpoint, .1f);
-        Gizmos.DrawLine(origin + (endpoint * 0.5f), halfpoint);
+        Gizmos.DrawLine(GetHalfPoint(origin, endpoint), halfpoint);
 
         //Segment debug
         Gizmos.color = Color.green;
         Gizmos.DrawLine(origin, halfpoint);
-        Gizmos.DrawLine(halfpoint, endpoint);
+        Gizmos.DrawLine(endpoint, halfpoint);
 
         transform.LookAt(endpoint);
     }

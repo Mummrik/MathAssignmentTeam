@@ -245,8 +245,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7b1cad97c06bbc4886afdf2ab9bc253, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxLegLength: 2
-  targetPosition: {x: 0, y: -0.22, z: 1.41}
+  maxReach: 2
+  targetPosition: {x: 0, y: 0, z: 1}
 --- !u!4 &769814118
 Transform:
   m_ObjectHideFlags: 0
@@ -260,7 +260,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -19.799, y: 0, z: 0.03}
 --- !u!1001 &828191678
 PrefabInstance:
   m_ObjectHideFlags: 0
