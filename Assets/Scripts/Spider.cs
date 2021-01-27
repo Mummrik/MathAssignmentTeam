@@ -4,59 +4,35 @@ using UnityEngine;
 
 public class Spider : MonoBehaviour
 {
-    public GameObject UpperLegJoint;
-    public GameObject LowerLegJoint;
-    public GameObject LegEndpoint;
 
-    public GameObject UpperLegMesh;
-    public GameObject LowerLegMesh;
+    [SerializeField]
+    private float moveSpeed = 5;
 
-    // Start is called before the first frame update
-    void Start()
-    {
+    public GameObject rightFrontLeg;
+    public GameObject rightBackLeg;
+    public GameObject leftFrontLeg;
+    public GameObject leftBackLeg;
 
-    }
-
-    // Update is called once per frame
     void Update()
     {
-
-    }
-    Vector3 end;
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-
-        float distance = Vector3.Distance(UpperLegJoint.transform.position, LegEndpoint.transform.position);
-        //Vector3 end = LegEndpoint.transform.position;
-        if (distance <= 2)
+        Vector2 direction = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        if (direction != Vector2.zero)
         {
-            end = LegEndpoint.transform.position;
+            transform.position += new Vector3(direction.x, 0, direction.y) * moveSpeed * Time.deltaTime;
         }
-        Gizmos.DrawLine(UpperLegJoint.transform.position, end);
 
-        Gizmos.color = Color.yellow;
+        if (Input.GetAxis("UpDown") != 0)
+        {
+            transform.position += new Vector3(0, Input.GetAxis("UpDown"), 0) * 2 * Time.deltaTime;
+        }
 
-        Vector3 halfPoint = GetHalfPointOnLine(UpperLegJoint.transform.position, end);
+        // Testing leg movement
+        //Vector3 targetPos = rightBackLeg.GetComponent<Leg>().endPoint;
+        //float dist = Vector3.Distance(transform.position, targetPos);
 
-        Vector3 cross = Vector3.Cross(UpperLegJoint.transform.position, end);
-        Vector3 halfPointUp = halfPoint + Vector3.up;
-        //Vector3 halfPointUp = halfPoint + cross.normalized;
-
-        float c = Vector3.Distance(UpperLegJoint.transform.position, halfPointUp);
-        float b = Vector3.Distance(UpperLegJoint.transform.position, halfPoint);
-        float a = Mathf.Sqrt(Mathf.Pow(c, 2) - Mathf.Pow(b, 2));
-
-        Gizmos.DrawLine(halfPoint, Vector3.up * a);
-
-        LowerLegJoint.transform.position = Vector3.up * a;
-
-        UpperLegJoint.transform.LookAt(LowerLegJoint.transform);
-        LowerLegJoint.transform.LookAt(end);
-    }
-
-    private Vector3 GetHalfPointOnLine(Vector3 startOrigin, Vector3 endOrigin)
-    {
-        return (startOrigin + endOrigin) * 0.5f;
+        //if (dist > 2.5f)
+        //{
+        //    rightBackLeg.GetComponent<Leg>().endPoint += (Vector3.forward * 0.5f) * Input.GetAxisRaw("Vertical");
+        //}
     }
 }
