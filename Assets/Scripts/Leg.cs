@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Leg : MonoBehaviour
 {
+    public bool drawGizmos = true;
     public float maxReach = 2;
     public Vector3 startPos;
     public Vector3 endPoint;
@@ -37,7 +38,37 @@ public class Leg : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.magenta;
+        if (!drawGizmos)
+        {
+            return;
+        }
+        Vector3 origin = joint1.transform.position;
+
+        // origin sphere
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(origin, .1f);
+
+        // end sphere
+        Gizmos.color = Color.red;
         Gizmos.DrawSphere(endPoint, .1f);
+
+        //Line between origin and endpoint
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(origin, endPoint);
+
+        float c = maxReach * 0.5f;
+        float b = Vector3.Distance(origin, GetHalfPoint(origin, endPoint));
+        float a = Mathf.Sqrt(Mathf.Pow(c, 2) - Mathf.Pow(b, 2));
+
+        Vector3 halfpoint = GetHalfPoint(origin, endPoint) + transform.up * a;
+
+        // halfpoint sphere
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(GetHalfPoint(origin, endPoint), halfpoint);
+
+        //Segment debug
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(origin, halfpoint);
+        Gizmos.DrawLine(endPoint, halfpoint);
     }
 }
