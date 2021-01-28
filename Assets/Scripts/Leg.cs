@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class Leg : MonoBehaviour
@@ -7,28 +8,41 @@ public class Leg : MonoBehaviour
     public bool drawGizmos = true;
     public float maxReach = 2;
     public Vector3 startPos;
-    public Vector3 endPoint;
+    public Vector3 targetPosition;
 
     public GameObject joint1;
     public GameObject joint2;
 
+    private Vector3 endPoint;
+    private Vector3 halfPoint;
+
     private void Start()
     {
-        endPoint = transform.position + startPos;
+        targetPosition = transform.position + startPos;
     }
 
     // Update is called once per frame
     void Update()
     {
+        endPoint = targetPosition;
+        float distance = Vector3.Distance(transform.position, targetPosition);
+        if (distance > maxReach)
+        {
+            endPoint = transform.position + (transform.forward * Mathf.Abs(maxReach - 0.001f));
+        }
+
+        halfPoint = GetHalfPoint(transform.position, endPoint);
+
         float c = maxReach * 0.5f;
-        float b = Vector3.Distance(transform.position, GetHalfPoint(transform.position, endPoint));
+        float b = Vector3.Distance(transform.position, halfPoint);
         float a = Mathf.Sqrt(Mathf.Pow(c, 2) - Mathf.Pow(b, 2));
 
-        joint2.transform.position = GetHalfPoint(transform.position, endPoint) + transform.up * a;
+        joint2.transform.position = halfPoint + transform.up * a;
 
         joint1.transform.LookAt(joint2.transform.position);
         joint2.transform.LookAt(endPoint);
         transform.LookAt(endPoint);
+
     }
 
     private Vector3 GetHalfPoint(Vector3 a, Vector3 b)
@@ -42,7 +56,13 @@ public class Leg : MonoBehaviour
         {
             return;
         }
+        
         Vector3 origin = joint1.transform.position;
+        
+        if (!EditorApplication.isPlaying)
+        {
+            endPoint = origin + startPos;
+        }
 
         // origin sphere
         Gizmos.color = Color.green;
@@ -51,6 +71,9 @@ public class Leg : MonoBehaviour
         // end sphere
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(endPoint, .1f);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawSphere(targetPosition, .07f);
 
         //Line between origin and endpoint
         Gizmos.color = Color.red;
@@ -70,5 +93,13 @@ public class Leg : MonoBehaviour
         Gizmos.color = Color.green;
         Gizmos.DrawLine(origin, halfpoint);
         Gizmos.DrawLine(endPoint, halfpoint);
+
+        if (!EditorApplication.isPlaying)
+        {
+            joint1.transform.LookAt(halfpoint);
+            joint2.transform.LookAt(endPoint);
+            transform.LookAt(endPoint);
+        }
+
     }
 }

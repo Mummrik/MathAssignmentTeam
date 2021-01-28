@@ -10,7 +10,11 @@ public class IkSolver : MonoBehaviour
     private void OnDrawGizmos()
     {
         Vector3 origin = transform.position;
-        Vector3 endpoint = origin + GetEndpoint(maxReach);
+        Vector3 endpoint = targetPosition;
+        if (Vector3.Distance(origin, targetPosition) > 2f)
+        {
+            endpoint = origin + (transform.forward * maxReach);
+        }
 
         // origin sphere
         Gizmos.color = Color.green;
