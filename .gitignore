@@ -58,3 +58,11 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+Assets/Editor/T_MapGeneratorEditor.cs
+Assets/Editor/T_MapGeneratorEditor.cs.meta
+Assets/Scripts/CityGeneration/T_MapDisplay.cs
+Assets/Scripts/CityGeneration/T_MapDisplay.cs.meta
+Assets/Scripts/CityGeneration/T_MapGenerator.cs
+Assets/Scripts/CityGeneration/T_MapGenerator.cs.meta
+Assets/Scripts/CityGeneration/T_Noise.cs
+Assets/Scripts/CityGeneration/T_Noise.cs.meta

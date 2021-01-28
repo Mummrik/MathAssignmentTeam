@@ -5,7 +5,6 @@ using UnityEngine;
 public class CityGenerator : MonoBehaviour
 {
 	[Header("CITYGENERATION")]
-
 	public int citySizeX = 25;
 	public int citySizeZ = 12;
 
@@ -13,15 +12,19 @@ public class CityGenerator : MonoBehaviour
 	[SerializeField] private float maxXOffset = 1.5f;
 	[SerializeField] private float minZOffset = 2.5f;
 	[SerializeField] private float maxZOffset = 4f;
-	[SerializeField, Range(0,1)] private float houseCreationChance = 0.65f;
-	[Header("")]
-	[SerializeField] private float houseSpacing = 8.0f;
-	[SerializeField] private float minHouseThickness = 1.5f;
-	[SerializeField] private float maxHouseThickness = 6f;
+	[SerializeField, Range(0,1)] private float houseCreationChance = 0.4f;
+	[Header("House Setings")]
+	[SerializeField] private float houseSpacing = 9.0f;
+	[SerializeField] private float minHouseThickness = 2.5f;
+	[SerializeField] private float maxHouseThickness = 8f;
 	[SerializeField] private float minHouseHeight = 8f;
 	[SerializeField] private float maxHouseHeight = 28f;
+	[Header("House Decoration")]
+	[Tooltip("1.0 = The tallest house")]
+	[SerializeField, Range(0,1)] private float heightRequiredForChimney = 0.95f;
 	[SerializeField] private KeyCode reGenerateInRuntime;
-	// [SerializeField] List<GameObject> generatedHouses = new List<GameObject>();
+
+	[SerializeField] List<GameObject> generatedHouses = new List<GameObject>();
 
 	private float randomThickness, randomHeight;
 
@@ -35,10 +38,10 @@ public class CityGenerator : MonoBehaviour
 
 	public void GenerateCity(int sizeX, int sizeZ)
 	{
-		// Child destruction!
 		ClearCity();
 
-		// Generation
+		float tallestHouse = 0f;
+
 		for (int x = 0; x < sizeX; x++)
 		{
 			for (int z = 0; z < sizeZ; z++)
@@ -46,10 +49,13 @@ public class CityGenerator : MonoBehaviour
 				var spacingX = x * houseSpacing;
 				var spacingZ = z * houseSpacing;
 
-				if (ChanceOfCreatingHouse(houseCreationChance)/*&& generatedHouses != null*/)
+				if (ChanceRoll(houseCreationChance))
 				{
 					randomThickness = Random.Range(minHouseThickness, maxHouseThickness);
 					randomHeight = Random.Range(minHouseHeight, maxHouseHeight);
+
+					if (randomHeight > tallestHouse)
+						tallestHouse = randomHeight;
 
 					GameObject house = GameObject.CreatePrimitive(PrimitiveType.Cube);
 					house.transform.SetParent(transform);
@@ -67,9 +73,37 @@ public class CityGenerator : MonoBehaviour
 						float heightPlacement = hit.point.y + (house.transform.localScale.y * 0.4f);
 						house.transform.position = new Vector3(house.transform.localPosition.x, heightPlacement, house.transform.localPosition.z);
 					}
+
+					generatedHouses.Add(house);
 				}
 			}
 		}
+
+		AddRoofMeshes(tallestHouse, heightRequiredForChimney);
+	}
+
+	private void AddRoofMeshes(float tallestHouse, float amount)
+	{
+		float heightVariation;
+		float widthVariation;
+		foreach (var house in generatedHouses)
+		{
+			heightVariation = Random.Range(0.05f, 0.2f);
+			widthVariation = Random.Range(0.4f, 0.85f);
+			if (house.transform.localScale.y >= tallestHouse * amount)
+			{
+				GameObject roof = RoofDecoration();
+
+				roof.transform.localScale = new Vector3(house.transform.localScale.x * widthVariation, house.transform.localScale.y * heightVariation, house.transform.localScale.z * widthVariation);
+				roof.transform.position = new Vector3(house.transform.position.x, house.transform.position.y + house.transform.localScale.y * 0.5f + roof.transform.localScale.y, house.transform.position.z);
+				roof.transform.SetParent(house.transform);
+			}
+		}
+	}
+
+	private GameObject RoofDecoration()
+	{
+		return GameObject.CreatePrimitive(PrimitiveType.Cylinder);
 	}
 
 	public void ClearCity()
@@ -87,9 +121,11 @@ public class CityGenerator : MonoBehaviour
 			foreach (GameObject child in allChildren)
 				DestroyImmediate(child.gameObject);
 		}
+
+		generatedHouses.Clear();
 	}
 
-	public bool ChanceOfCreatingHouse(float chance)
+	public bool ChanceRoll(float chance)
 	{
 		float rnd = Random.Range(0.0f, 1.0f);
 
