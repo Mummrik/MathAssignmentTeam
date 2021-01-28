@@ -11,7 +11,7 @@ public class IkSolver : MonoBehaviour
     {
         Vector3 origin = transform.position;
         Vector3 endpoint = targetPosition;
-        if (Vector3.Distance(origin, targetPosition) > 2f)
+        if (Vector3.Distance(origin, targetPosition) > maxReach)
         {
             endpoint = origin + (transform.forward * maxReach);
         }
